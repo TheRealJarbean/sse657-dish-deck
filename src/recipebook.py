@@ -51,3 +51,8 @@ class RecipeBook:
 		# TODO: replace with try/catch for error handling
 		if recipe_name in self.get_recipe_names():
 			return self.__recipes[recipe_name]["description"]
+		
+	def get_recipe_ingredients(self, recipe_name: str):
+		# TODO: replace with try/catch for error handling
+		if recipe_name in self.get_recipe_names():
+			return self.__recipes[recipe_name]["ingredients"]
