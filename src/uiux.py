@@ -34,6 +34,8 @@ def create_recipe_preview(recipe_name: str):
 		recipe_name.title(), 
 		font=["consolas", 15, "bold"], 
 		pad=(0, 10),
+		enable_events=True,
+		key=recipe_name + "check"
 		)
 
 	# Default to missing image thumbnail
