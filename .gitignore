@@ -1,0 +1,11 @@
+# Ignore everything in data except for example recipe and the default image
+data/thumb/*
+data/recipes/*
+!data/thumb/Missing Image.png
+!data/recipes/Example Recipe.md
+
+# Ignore any pycaches anywhere
+**/__pycache__/
+
+# This is a folder for junk files to test methods and classes, at least for now
+test/
