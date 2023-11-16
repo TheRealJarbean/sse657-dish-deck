@@ -63,7 +63,7 @@ def create_recipe_preview(recipe_name: str):
 
 # Individual elements of the UI
 search_bar = sg.Input(do_not_clear=True, size=(100, 1), pad=((0, 0), (20, 0)), enable_events=True, key="_SEARCH_")
-ingredient_list = sg.Listbox([], size=(50, 40), pad=((0, 0), (20, 0)), no_scrollbar=True, key="_INGREDIENTS_")
+ingredient_list = sg.Listbox([], size=(500, 500), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], no_scrollbar=True, key="_INGREDIENTS_")
 
 # Layout for the meals tab
 layout_meals = [[
@@ -141,6 +141,29 @@ while True:
 	else:
 		for key in recipe_book.get_recipe_names():
 			window[key].Update(visible=True)
+
+	# Update ingredients list based on selected recipes
+	ingredients = []
+	for name in recipe_book.get_recipe_names():
+		if values[name + "check"]:
+			# TODO: Combine similar ingredients and update quantities
+			# TODO: Make [ ] into [x] if ingredient in pantry
+			# TODO: Somehow indicate if pantry has partial amount of ingredient
+			max_len = 36
+			ingredients += [f"[ ] {x[0]} | {x[1]}" for x in recipe_book.get_recipe_ingredients(name)]
+	
+	if ingredients != []:
+		max_len = 36 # Max length allowed in listbox boundary
+		ing = lambda s: s[:s.find('|')] # Returns ingredient name part of string
+		qty = lambda s: s[s.find('|'):] # Returns ingredient quantity part of string
+		# Pad quantity parts of ingredient strings to equal length
+		ingredients = [ing(s) + qty(s).ljust(max(len(qty(s)) for s in ingredients)) for s in ingredients]
+		# Trim any long ingredient strings to listbox width
+		ingredients = [ing(s)[:(max_len - len(qty(s)) - 4)] + "... " + qty(s) if len(s) > max_len else s for s in ingredients]
+		# Extend rest of ingredient strings to fill listbox width
+		ingredients = [ing(s) + (" " * (max_len - len(s))) + qty(s) for s in ingredients]
+
+	window["_INGREDIENTS_"].Update(ingredients)
 
 	# End program if user closes window
 	if event == sg.WIN_CLOSED:
