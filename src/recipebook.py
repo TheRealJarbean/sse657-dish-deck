@@ -44,7 +44,9 @@ class RecipeBook:
 		
 		self.__recipes[recipe_name.lower()] = recipe_data
 
-	def get_recipe_names(self):
+	# TODO: Add filtering, i.e. make parameters ingredients and strict functional
+	#		strict=True means ONLY the listed ingredients can be in returned recipes, no others
+	def get_recipe_names(self, ingredients=None, strict=False):
 		return list(self.__recipes.keys())
 
 	def get_recipe_desc(self, recipe_name: str):
