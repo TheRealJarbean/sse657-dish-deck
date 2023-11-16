@@ -6,7 +6,7 @@ class RecipeBook:
 		# source, description, ingredients, and instructions
 		self.__recipes = {}
 
-	def add_recipe(self, filepath: str):
+	def import_recipe(self, filepath: str):
 		recipe_name = ""
 		recipe_data = {
 			"source": "",

@@ -24,7 +24,7 @@ recipe_book = RecipeBook()
 file_names = os.listdir(RECIPE_FOLDER)
 for file_name in file_names:#
 	#TODO: Make sure there are no duplicate recipes
-	recipe_book.add_recipe(RECIPE_FOLDER + file_name)
+	recipe_book.import_recipe(RECIPE_FOLDER + file_name)
 
 # Each recipe preview consists of a thumbnail, and as much of the
 # description as will fit in the remaining space in the element
