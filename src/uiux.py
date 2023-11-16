@@ -123,8 +123,6 @@ window = sg.Window(
 	size=(1000, 700), 
 )
 
-print(recipe_book.get_recipe_names())
-
 # Event loop
 while True:
 	event, values = window.read()
