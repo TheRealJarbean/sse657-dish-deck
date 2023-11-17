@@ -65,8 +65,8 @@ def create_recipe_preview(recipe_name: str):
 search_bar = sg.Input(do_not_clear=True, size=(100, 1), pad=((0, 0), (20, 0)), enable_events=True, key="_SEARCH_")
 ingredient_list = sg.Listbox([], size=(500, 500), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], no_scrollbar=True, key="_INGREDIENTS_")
 
-# Layout for the meals tab
-layout_meals = [[
+# Layout for the recipebook tab
+layout_recipebook = [[
 	sg.Column(
 		[[search_bar], [
 			sg.Column(
@@ -94,12 +94,12 @@ layout_meals = [[
 
 # Layout for the pantry tab
 layout_pantry = [
-	[sg.Text("Pantry tab in progress...")]
+	sg.Input(do_not_clear=True, size=(100, 1), pad=((0, 0), (20, 0)), enable_events=True, key="_PANTRYADD_")
 ]
 
-tab_meals = sg.Tab(
-	"Meals", 
-	layout_meals,
+tab_recipebook = sg.Tab(
+	"Recipe Book", 
+	layout_recipebook,
 	)
 
 tab_pantry = sg.Tab(
@@ -109,7 +109,7 @@ tab_pantry = sg.Tab(
 
 # Complete layout for the window
 layout = [[sg.TabGroup([
-	[tab_meals,
+	[tab_recipebook,
 	tab_pantry]],
 	font=["consolas", 20, "bold"],
 	border_width=0,
