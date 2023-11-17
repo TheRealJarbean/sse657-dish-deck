@@ -100,11 +100,13 @@ layout_pantry = [
 tab_recipebook = sg.Tab(
 	"Recipe Book", 
 	layout_recipebook,
+	key="_TABRECIPEBOOK_"
 	)
 
 tab_pantry = sg.Tab(
 	"Pantry",
 	layout_pantry,
+	key="_TABPANTRY_"
 	)
 
 # Complete layout for the window
