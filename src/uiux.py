@@ -128,7 +128,6 @@ window = sg.Window(
 # Event loop
 while True:
 	event, values = window.read()
-	print(f"Event: {event}\nValues: {values}")
 
 	if values['_SEARCH_'] != '':
 		search = values['_SEARCH_'].lower()
