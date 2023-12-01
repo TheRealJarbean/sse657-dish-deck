@@ -20,6 +20,10 @@ os.chdir(src_directory)
 # Create master RecipeBook object
 recipe_book = RecipeBook()
 
+# Create pantry data structure
+# TODO: Save user pantry data and import on load
+data_pantry = []
+
 # Load all recipes saved in local recipes folder
 file_names = os.listdir(RECIPE_FOLDER)
 for file_name in file_names:#
@@ -94,7 +98,18 @@ layout_recipebook = [[
 
 # Layout for the pantry tab
 layout_pantry = [
-	sg.Input(do_not_clear=True, size=(100, 1), pad=((0, 0), (20, 0)), enable_events=True, key="_PANTRYADD_")
+		[
+			sg.Text('Ingredient', size=(29, 1), pad=((5, 0), (20, 0))),
+			sg.Text('Quantity', size=(29, 1), pad=((0, 0), (20, 0))),
+			sg.Text('Unit (Cups, oz, etc.)', size=(30, 1), pad=((0, 0), (20, 0)))
+		],
+		[
+			sg.Input(do_not_clear=True, size=(30, 1), pad=((5, 20), (0, 0)), key="_PANTRYADD_ING_"),
+   			sg.Input(do_not_clear=True, size=(30, 1), pad=((0, 20), (0, 0)), key="_PANTRYADD_QTY_"),
+			sg.Input(do_not_clear=True, size=(30, 1), pad=((0, 20), (0, 0)), key="_PANTRYADD_UNIT_"),
+			sg.Button('Add', size=(15, 1), enable_events=True, key="_PANTRYADD_SUBMIT_")
+		],
+		[sg.Table(values=data_pantry, headings=['Ingredient', 'Quantity', 'Unit'], enable_click_events=True, expand_x=True, expand_y=True, key="_PANTRY_")]
 ]
 
 tab_recipebook = sg.Tab(
@@ -164,7 +179,30 @@ while True:
 		# Extend rest of ingredient strings to fill listbox width
 		ingredients = [ing(s) + (" " * (max_len - len(s))) + qty(s) for s in ingredients]
 
+	if event == '_PANTRYADD_SUBMIT_':
+		ingredient = values['_PANTRYADD_ING_']
+		qty = values['_PANTRYADD_QTY_']
+		unit = values['_PANTRYADD_UNIT_']
+
+		if ingredient != '':
+			new_row = None
+			# Accept an entry if both qty and unit are not specified, but not if only one is specified
+			if qty != '' and unit != '':
+				new_row = [ingredient, qty, unit]
+			elif qty == '' and unit == '':
+				new_row = [ingredient, 'N/A', 'N/A']
+			
+			if new_row != None:
+				data_pantry.append(new_row)
+
+	# Delete an ingredient from the pantry
+	if event[0] and event[0] == '_PANTRY_':
+		confirm = sg.popup_yes_no(f"Are you sure you want to delete {data_pantry[event[2][0]][0]} from the pantry?", title="Confirm deletion")
+		if confirm == 'Yes':
+			data_pantry.remove(data_pantry[event[2][0]])
+
 	window["_INGREDIENTS_"].Update(ingredients)
+	window["_PANTRY_"].Update(data_pantry)
 
 	# End program if user closes window
 	if event == sg.WIN_CLOSED:
