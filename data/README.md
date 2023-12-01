@@ -1,0 +1,1 @@
+The checkboxes under Ingredients are never updated in storage. They are simply for convenience if the recipe is exported and opened in another Markdown editor.
