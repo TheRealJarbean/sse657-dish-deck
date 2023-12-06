@@ -4,8 +4,6 @@ data/recipes/*
 !data/thumb/Missing Image.png
 !data/recipes/Example Recipe.md
 
-# Ignore any pycaches anywhere
+# Ignore any caches anywhere
 **/__pycache__/
-
-# This is a folder for junk files to test methods and classes, at least for now
-test/
+**/.pytest_cache/
