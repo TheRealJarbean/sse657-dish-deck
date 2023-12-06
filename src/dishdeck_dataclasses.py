@@ -15,7 +15,7 @@ class Ingredient:
 @dataclass
 class Recipe:
 	name: str
-	source: str
+	source: str | None
 	description: str
 	ingredients: list[Ingredient]
 	instructions: list[str]
