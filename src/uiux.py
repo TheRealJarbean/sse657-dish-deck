@@ -5,6 +5,7 @@
 import PySimpleGUI as sg
 import os
 # Local modules
+from dishdeck_dataclasses import *
 from recipebook import RecipeBook
 
 sg.theme('dark')
@@ -165,8 +166,7 @@ while True:
 			# TODO: Combine similar ingredients and update quantities
 			# TODO: Make [ ] into [x] if ingredient in pantry
 			# TODO: Somehow indicate if pantry has partial amount of ingredient
-			max_len = 36
-			ingredients += [f"[ ] {x[0]} | {x[1]}" for x in recipe_book.get_recipe_ingredients(name)]
+			ingredients += [f"[ ] {ing}" for ing in recipe_book.get_recipe_ingredients(name)]
 	
 	if ingredients != []:
 		max_len = 36 # Max length allowed in listbox boundary
