@@ -3,14 +3,17 @@ from dataclasses import dataclass
 @dataclass
 class Ingredient:
 	name: str
-	quantity: int
+	quantity: int = None
 	unit: str = None
 
 	def __str__(self):
 		if self.unit != None:
 			return f'{self.name} | {self.quantity} {self.unit}'
 		
-		return f'{self.name} | {self.quantity}'
+		if self.qty != None:
+			return f'{self.name} | {self.quantity}'
+		
+		return f'{self.name}'
 
 @dataclass
 class Recipe:
