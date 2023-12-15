@@ -186,14 +186,17 @@ while True:
 
 		if ingredient != '':
 			new_row = None
-			# Accept an entry if both qty and unit are not specified, but not if only one is specified
+			# Accept an entry if both qty and unit are not specified, or just unit is not specified, but not if only unit is specified
 			if qty != '' and unit != '':
 				new_row = [ingredient, qty, unit]
 			elif qty == '' and unit == '':
 				new_row = [ingredient, 'N/A', 'N/A']
+			elif qty != '' and unit == '':
+				new_row = [ingredient, qty, 'N/A']
 			
 			if new_row != None:
 				data_pantry.append(new_row)
+			# TODO: Display message in UI indicating a submission is invalid
 
 	# Delete an ingredient from the pantry
 	if event[0] and event[0] == '_PANTRY_':
