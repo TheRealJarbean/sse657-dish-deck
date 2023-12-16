@@ -21,11 +21,18 @@ class RecipeBook:
 			lines = file.readlines()
 
 			recipe_data["name"] = lines[0].strip()[2:]
-			recipe_data["tags"] = lines[1].split(', ')
-			recipe_source = lines[2].strip()
-			if recipe_source != "":
+			if lines[1].startswith('#'):
+				recipe_data["tags"] = lines[1].split(', ')
+				source_line = 2
+			else:
+				recipe_data["tags"] = None
+				source_line = 1
+			if lines[source_line].startswith('['):
+				recipe_source = lines[source_line].strip()
 				# Trim off the markdown link label and parenthesis
 				recipe_data["source"] = recipe_source.split("(")[1][:-1]
+			else:
+				recipe_data["source"] = None
 
 			key = ""
 			for line in lines[2:]:
@@ -41,8 +48,8 @@ class RecipeBook:
 				if key == "Ingredients":
 					current_line = current_line[6:] # Trim checkbox and spaces
 					ingredient_data = current_line.split(' | ') # Separate ingredient name and qty/unit
-					ingredient_data = [ingredient_data[0]] + ingredient_data[1].split() # Separate qty and unit
-					print(ingredient_data)
+					if len(ingredient_data) != 1:
+						ingredient_data = [ingredient_data[0]] + ingredient_data[1].split() # Separate qty and unit
 					recipe_data["ingredients"].append(Ingredient(*tuple(ingredient_data)))
 					continue
 				if key == "Instructions":
@@ -51,6 +58,11 @@ class RecipeBook:
 		
 		new_recipe = Recipe(recipe_data["name"], recipe_data["tags"], None, recipe_data["description"], recipe_data["ingredients"], recipe_data["instructions"])
 		self.__recipes[recipe_data["name"].lower()] = new_recipe
+
+	def add_recipe(self, directory: str, name: str, tags: list[str], source: str | None, description: str, ingredients: list[Ingredient], instructions: list[str]):
+		new_recipe = Recipe(name, tags, source, description, ingredients, instructions)
+		new_recipe.save(directory)
+		self.__recipes[name] = new_recipe
 
 	# TODO: Add filtering, i.e. make parameters ingredients and strict functional
 	#		strict=True means ONLY the listed ingredients can be in returned recipes, no others

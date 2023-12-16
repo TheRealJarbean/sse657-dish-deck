@@ -28,13 +28,14 @@ class Recipe:
 	def __str__(self):
 		string = ''
 		string += f'# {self.name}\n'
-		string += ', '.join(self.tags) + '\n'
+		if self.tags != None:
+			string += ', '.join(self.tags) + '\n'
 		string += f'[Source]({self.source})\n\n' if self.source != None else '\n'
-		string += f'## Description\n\n {self.description}\n\n'
+		string += f'## Description\n\n{self.description}\n\n'
 		string += '## Ingredients\n\n'
 		for ing in self.ingredients:
-			string += f'- [ ] {ing}'
-		string += '\n\n## Instructions\n\n'
+			string += f'- [ ] {ing}\n'
+		string += '\n## Instructions\n\n'
 		for i, inst in enumerate(self.instructions):
 			string += f'{i + 1}. {inst}\n\n'
 
