@@ -11,6 +11,7 @@ class RecipeBook:
 	def import_recipe(self, filepath: str):
 		recipe_data = {
 			"name": "",
+			"tags": [],
 			"source": "",
 			"description": "",
 			"ingredients": [], # Each element should be in the form: [name, quantity]
@@ -20,7 +21,8 @@ class RecipeBook:
 			lines = file.readlines()
 
 			recipe_data["name"] = lines[0].strip()[2:]
-			recipe_source = lines[1].strip()
+			recipe_data["tags"] = lines[1].split(', ')
+			recipe_source = lines[2].strip()
 			if recipe_source != "":
 				# Trim off the markdown link label and parenthesis
 				recipe_data["source"] = recipe_source.split("(")[1][:-1]
@@ -47,7 +49,7 @@ class RecipeBook:
 					current_line = current_line[3:] # Trim instruction number
 					recipe_data["instructions"].append(current_line)
 		
-		new_recipe = Recipe(recipe_data["name"], None, recipe_data["description"], recipe_data["ingredients"], recipe_data["instructions"])
+		new_recipe = Recipe(recipe_data["name"], recipe_data["tags"], None, recipe_data["description"], recipe_data["ingredients"], recipe_data["instructions"])
 		self.__recipes[recipe_data["name"].lower()] = new_recipe
 
 	# TODO: Add filtering, i.e. make parameters ingredients and strict functional
