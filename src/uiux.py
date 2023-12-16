@@ -172,10 +172,16 @@ while True:
 	ingredients = []
 	for name in recipe_book.get_recipe_names():
 		if values[name + "check"]:
-			# TODO: Combine similar ingredients and update quantities
-			# TODO: Make [ ] into [x] if ingredient in pantry
 			# TODO: Somehow indicate if pantry has partial amount of ingredient
-			ingredients += [f"[ ] {ing}" for ing in recipe_book.get_recipe_ingredients(name)]
+			for ing in recipe_book.get_recipe_ingredients(name):
+				pantry_ing = pantry.get_ingredient(ing.name)
+				if pantry_ing != None:
+					if pantry_ing.quantity == None or pantry_ing.quantity >= ing.quantity:
+						ingredients += [f'[x] {ing}']
+					else:
+						ingredients += [f'[ ] {ing}']
+				else:
+					ingredients += [f'[ ] {ing}']
 	
 	if ingredients != []:
 		max_len = 36 # Max length allowed in listbox boundary
