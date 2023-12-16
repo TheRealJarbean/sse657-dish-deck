@@ -176,7 +176,7 @@ while True:
 			for ing in recipe_book.get_recipe_ingredients(name):
 				pantry_ing = pantry.get_ingredient(ing.name)
 				if pantry_ing != None:
-					if pantry_ing.quantity == None or pantry_ing.quantity >= ing.quantity:
+					if pantry_ing.quantity == None or (pantry_ing.quantity >= ing.quantity and pantry_ing.unit == ing.unit):
 						ingredients += [f'[x] {ing}']
 					else:
 						ingredients += [f'[ ] {ing}']
