@@ -30,7 +30,7 @@ class Recipe:
 		string += f'Description: {self.description}\n'
 		string += 'Ingredients:\n'
 		for ing in self.ingredients:
-			string += f'{self.ingredient}'
+			string += f'{ing}'
 		string += 'Instructions:\n'
 		for i, inst in enumerate(self.instructions):
 			string += f'{i + 1}: {inst}'
