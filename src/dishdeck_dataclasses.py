@@ -19,6 +19,7 @@ class Ingredient:
 @dataclass
 class Recipe:
 	name: str
+	tags: list[str]
 	source: str | None
 	description: str
 	ingredients: list[Ingredient]
@@ -27,6 +28,7 @@ class Recipe:
 	def __str__(self):
 		string = ''
 		string += f'# {self.name}\n'
+		string += ', '.join(self.tags)
 		string += f'[Source]({self.source})\n\n' if self.source != None else '\n'
 		string += f'## Description\n\n {self.description}\n\n'
 		string += '## Ingredients\n\n'
