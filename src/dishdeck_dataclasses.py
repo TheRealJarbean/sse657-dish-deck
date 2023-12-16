@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from os import remove
 
 @dataclass
 class Ingredient:
@@ -25,14 +26,27 @@ class Recipe:
 
 	def __str__(self):
 		string = ''
-		string += f'Name: {self.name}\n'
-		string += f'Source: {self.source}\n' if self.source != None else ''
-		string += f'Description: {self.description}\n'
-		string += 'Ingredients:\n'
+		string += f'# {self.name}\n'
+		string += f'[Source]({self.source})\n\n' if self.source != None else '\n'
+		string += f'## Description\n\n {self.description}\n\n'
+		string += '## Ingredients\n\n'
 		for ing in self.ingredients:
-			string += f'{ing}'
-		string += 'Instructions:\n'
+			string += f'- [ ] {ing}'
+		string += '\n\n## Instructions\n\n'
 		for i, inst in enumerate(self.instructions):
-			string += f'{i + 1}: {inst}'
+			string += f'{i + 1}. {inst}\n\n'
 
 		return string
+	
+	def save(self, directory: str):
+		filepath = directory + '/' + self.name + '.md'
+		with open(filepath, 'w') as file:
+			file.write(self.__str__())
+
+	def delete(self, directory: str):
+		filepath = directory + '/' + self.name + '.md'
+		try:
+			remove(filepath)
+			return 'Recipe successfully deleted.'
+		except FileNotFoundError:
+			return 'Recipe file not found.'
