@@ -7,11 +7,13 @@ import os
 # Local modules
 from dishdeck_dataclasses import *
 from recipebook import RecipeBook
+from pantry import Pantry
 
 sg.theme('dark')
 
-RECIPE_FOLDER = "data/recipes/"
-THUMB_FOLDER = "data/thumb/"
+RECIPE_FOLDER = 'data/recipes/'
+PANTRY_FILE = 'data/pantry.json'
+THUMB_FOLDER = 'data/thumb/'
 
 ## Set the cwd to the folder above src
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -21,15 +23,21 @@ os.chdir(src_directory)
 # Create master RecipeBook object
 recipe_book = RecipeBook()
 
-# Create pantry data structure
-# TODO: Save user pantry data and import on load
-data_pantry = []
-
 # Load all recipes saved in local recipes folder
 file_names = os.listdir(RECIPE_FOLDER)
 for file_name in file_names:#
-	#TODO: Make sure there are no duplicate recipes
+	# TODO: Make sure there are no duplicate recipes
 	recipe_book.import_recipe(RECIPE_FOLDER + file_name)
+
+# Create master Pantry object
+pantry = Pantry()
+
+# Import existing pantry ingredients, if there are any
+try:
+	pantry.load_ingredients(PANTRY_FILE)
+except FileNotFoundError:
+	print('No pantry file found.')
+data_pantry = [[ing.name, ing.quantity if ing.quantity != None else 'N/A', ing.unit if ing.unit != None else 'N/A'] for ing in pantry.get_all_ingredients()]
 
 # Each recipe preview consists of a thumbnail, and as much of the
 # description as will fit in the remaining space in the element
@@ -108,7 +116,8 @@ layout_pantry = [
 			sg.Input(do_not_clear=True, size=(30, 1), pad=((5, 20), (0, 0)), key="_PANTRYADD_ING_"),
    			sg.Input(do_not_clear=True, size=(30, 1), pad=((0, 20), (0, 0)), key="_PANTRYADD_QTY_"),
 			sg.Input(do_not_clear=True, size=(30, 1), pad=((0, 20), (0, 0)), key="_PANTRYADD_UNIT_"),
-			sg.Button('Add', size=(15, 1), enable_events=True, key="_PANTRYADD_SUBMIT_")
+			sg.Button('Add', size=(15, 1), pad=((0, 10), (0, 0)), enable_events=True, key="_PANTRYADD_SUBMIT_"),
+			sg.Button('Save Pantry', size=(15, 1), enable_events=True, key="_PANTRY_SAVE_")
 		],
 		[sg.Table(values=data_pantry, headings=['Ingredient', 'Quantity', 'Unit'], enable_click_events=True, expand_x=True, expand_y=True, key="_PANTRY_")]
 ]
@@ -185,30 +194,30 @@ while True:
 		unit = values['_PANTRYADD_UNIT_']
 
 		if ingredient != '':
-			new_row = None
 			# Accept an entry if both qty and unit are not specified, or just unit is not specified, but not if only unit is specified
-			if qty != '' and unit != '':
-				new_row = [ingredient, qty, unit]
-			elif qty == '' and unit == '':
-				new_row = [ingredient, 'N/A', 'N/A']
-			elif qty != '' and unit == '':
-				new_row = [ingredient, qty, 'N/A']
-			
-			if new_row != None:
-				data_pantry.append(new_row)
+			if ingredient != '' and not (qty == '' and unit != ''):
+				try:
+					pantry.add_ingredient(ingredient, qty, unit)
+				except KeyError as error:
+					sg.popup_ok(f'Error: {str(error)}')
+
 			# TODO: Display message in UI indicating a submission is invalid
 
 	# Delete an ingredient from the pantry
 	if event[0] and event[0] == '_PANTRY_':
-		confirm = sg.popup_yes_no(f"Are you sure you want to delete {data_pantry[event[2][0]][0]} from the pantry?", title="Confirm deletion")
+		confirm = sg.popup_yes_no(f"Are you sure you want to delete {pantry.get_ingredient(event[2][0])} from the pantry?", title="Confirm deletion")
 		if confirm == 'Yes':
-			data_pantry.remove(data_pantry[event[2][0]])
+			pantry.remove_ingredient(event[2][0])
+
+	if event == '_PANTRY_SAVE_':
+		pantry.save_ingredients(PANTRY_FILE)
 
 	window["_INGREDIENTS_"].Update(ingredients)
-	window["_PANTRY_"].Update(data_pantry)
+	window["_PANTRY_"].Update([[ing.name, ing.quantity if ing.quantity != None else 'N/A', ing.unit if ing.unit != None else 'N/A'] for ing in pantry.get_all_ingredients()])
 
 	# End program if user closes window
 	if event == sg.WIN_CLOSED:
 		break
 
+pantry.save_ingredients()
 window.close()
