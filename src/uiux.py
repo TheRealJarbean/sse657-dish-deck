@@ -147,7 +147,7 @@ layout = [[sg.TabGroup([
 
 # Create the Window
 window = sg.Window(
-	"Demo",
+	"Dish Deck",
 	layout,
 	size=(1000, 700), 
 )
