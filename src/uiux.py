@@ -4,6 +4,7 @@
 # External modules
 import PySimpleGUI as sg
 import os
+import sys
 # Local modules
 from dishdeck_dataclasses import *
 from recipebook import RecipeBook
@@ -122,6 +123,69 @@ layout_pantry = [
 		[sg.Table(values=data_pantry, headings=['Ingredient', 'Quantity', 'Unit'], enable_click_events=True, expand_x=True, expand_y=True, key="_PANTRY_")]
 ]
 
+# Layout for the add recipe tab
+
+layout_addrecipe = [
+	[
+		sg.Column([
+			[
+				sg.Image(filename='data/thumb/Missing Image.png', enable_events=True, key="_CHANGETHUMB_")
+			],
+			[
+				sg.Text('Name')
+			],
+			[
+				sg.Input(key="_ADDRECIPE_NAME_")
+			],
+			[
+				sg.Text('Tags (Optional)', pad=((0, 0), (15, 0)))
+			],
+			[
+				sg.Text('Tags must be written in this format: #tag1, #tag2, #etc')
+			],
+			[
+				sg.Input(key="_ADDRECIPE_TAGS_")
+			],
+			[
+				sg.Text('Source (Optional)', pad=((0, 0), (15, 0)))
+			],
+			[
+				sg.Input(key="_ADDRECIPE_SOURCE_")
+			],
+			[
+				sg.Text('Description', pad=((0, 0), (15, 0)))
+			],
+			[
+				sg.Multiline(size=(50, 6), key='_ADDRECIPE_DESCRIPTION_')
+			]
+		], size=(400, 500), pad=((0, 0), (30, 0)), vertical_alignment='t'),
+		sg.Column([
+			[
+				sg.Text('Ingredients')
+			],
+			[
+				sg.Text('Each ingredient must be on it\'s own line.\nThe name, quantity (optional), and unit (optional) must be separated by a \" | \"\n\
+Ex: Tomato Paste | 6 | oz    flour     Potatoes | 7')
+			],
+			[
+				sg.Multiline(size=(None, 6), key='_ADDRECIPE_INGREDIENTS_')
+			],
+						[
+				sg.Text('Instructions', pad=((0, 0), (15, 0)))
+			],
+			[
+				sg.Text('Each instruction should be separated by a \" | \"\nEx: Boil water | cook pasta')
+			],
+			[
+				sg.Multiline(size=(None, 14), key='_ADDRECIPE_INSTRUCTIONS_')
+			]
+		], pad=((40, 0), (30, 0)), vertical_alignment='t')
+	],
+	[
+		sg.Button('Add Recipe', pad=((420, 0), (30, 0)), enable_events=True, key="_ADDRECIPE_BUTTON_")
+	]
+]
+
 tab_recipebook = sg.Tab(
 	"Recipe Book", 
 	layout_recipebook,
@@ -134,10 +198,17 @@ tab_pantry = sg.Tab(
 	key="_TABPANTRY_"
 	)
 
+tab_addrecipe = sg.Tab(
+	"Add Recipe",
+	layout_addrecipe,
+	key="_TABADDRECIPE_"
+)
+
 # Complete layout for the window
 layout = [[sg.TabGroup([
 	[tab_recipebook,
-	tab_pantry]],
+	tab_pantry,
+	tab_addrecipe]],
 	font=["consolas", 20, "bold"],
 	border_width=0,
 	tab_border_width=2,
@@ -170,7 +241,7 @@ while True:
 			window[key].Update(visible=True)
 
 	# Update ingredients list based on selected recipes
-	ingredients = []
+	list_ingredients = []
 	for name in recipe_book.get_recipe_names():
 		if values[name + "check"]:
 			# TODO: Somehow indicate if pantry has partial amount of ingredient
@@ -178,22 +249,22 @@ while True:
 				pantry_ing = pantry.get_ingredient(ing.name)
 				if pantry_ing != None:
 					if pantry_ing.quantity == None or (pantry_ing.quantity >= ing.quantity and pantry_ing.unit == ing.unit):
-						ingredients += [f'[x] {ing}']
+						list_ingredients += [f'[x] {ing}']
 					else:
-						ingredients += [f'[ ] {ing}']
+						list_ingredients += [f'[ ] {ing}']
 				else:
-					ingredients += [f'[ ] {ing}']
+					list_ingredients += [f'[ ] {ing}']
 	
-	if ingredients != []:
+	if list_ingredients != []:
 		max_len = 36 # Max length allowed in listbox boundary
 		ing = lambda s: s[:s.find('|')] # Returns ingredient name part of string
 		qty = lambda s: s[s.find('|'):] # Returns ingredient quantity part of string
 		# Pad quantity parts of ingredient strings to equal length
-		ingredients = [ing(s) + qty(s).ljust(max(len(qty(s)) for s in ingredients)) for s in ingredients]
+		list_ingredients = [ing(s) + qty(s).ljust(max(len(qty(s)) for s in list_ingredients)) for s in list_ingredients]
 		# Trim any long ingredient strings to listbox width
-		ingredients = [ing(s)[:(max_len - len(qty(s)) - 4)] + "... " + qty(s) if len(s) > max_len else s for s in ingredients]
+		list_ingredients = [ing(s)[:(max_len - len(qty(s)) - 4)] + "... " + qty(s) if len(s) > max_len else s for s in list_ingredients]
 		# Extend rest of ingredient strings to fill listbox width
-		ingredients = [ing(s) + (" " * (max_len - len(s))) + qty(s) for s in ingredients]
+		list_ingredients = [ing(s) + (" " * (max_len - len(s))) + qty(s) for s in list_ingredients]
 
 	if event == '_PANTRYADD_SUBMIT_':
 		ingredient = values['_PANTRYADD_ING_']
@@ -219,7 +290,33 @@ while True:
 	if event == '_PANTRY_SAVE_':
 		pantry.save_ingredients(PANTRY_FILE)
 
-	window["_INGREDIENTS_"].Update(ingredients)
+	# Add a recipe
+	for i in range(1):
+		if event == '_ADDRECIPE_BUTTON_':
+			name = values['_ADDRECIPE_NAME_']
+			tags = values['_ADDRECIPE_TAGS_'].split(', ') if values['_ADDRECIPE_TAGS_'] else None
+			source = values['_ADDRECIPE_SOURCE_'] if values['_ADDRECIPE_SOURCE_'] else None
+			description = values['_ADDRECIPE_DESCRIPTION_']
+			ingredients = values['_ADDRECIPE_INGREDIENTS_']
+			instructions = values['_ADDRECIPE_INSTRUCTIONS_']
+			if not any([name, description, ingredients, instructions]):
+				sg.popup_ok('Error: Required field is empty.')
+				break
+			if not tags == None and any(tag.startswith('#') == False for tag in tags):
+				sg.popup_ok('Error: One or more tags in incorrect format.')
+				break
+			ingredients = ingredients.split('\n')
+			ingredients = [ing.split(' | ') for ing in ingredients]
+			for ing in ingredients:
+				ing.extend([None] * (3 - len(ing)))
+			ingredients = [Ingredient(ing[0], ing[1], ing[2]) for ing in ingredients]
+			instructions = instructions.split(' | ')
+			recipe_book.add_recipe(RECIPE_FOLDER, name, tags, source, description, ingredients, instructions)
+			if sg.popup_ok('Recipe successfully added! Click OK to reload Recipe Book. (or restart the program)') == 'OK':
+				python = sys.executable
+				os.execv(python, [python, __file__])
+
+	window["_INGREDIENTS_"].Update(list_ingredients)
 	window["_PANTRY_"].Update([[ing.name, ing.quantity if ing.quantity != None else 'N/A', ing.unit if ing.unit != None else 'N/A'] for ing in pantry.get_all_ingredients()])
 
 	# End program if user closes window
