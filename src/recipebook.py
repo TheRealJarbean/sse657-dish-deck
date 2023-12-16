@@ -66,3 +66,13 @@ class RecipeBook:
 		# TODO: replace with try/catch for error handling
 		if recipe_name in self.get_recipe_names():
 			return self.__recipes[recipe_name].ingredients
+		
+	def search_recipes(self, search_terms: list[str]) -> list[Recipe]:
+		# Separate tags so they can be treated differently
+		tags = [term for term in search_terms if term.startswith('#')]
+		search_terms = [term for term in search_terms if term not in tags]
+		results = []
+		for key, recipe in self.__recipes.items():
+			if all(tag in recipe.tags for tag in tags) and all(term.lower() in recipe.name.lower() for term in search_terms):
+				results.append(key)
+		return results

@@ -158,7 +158,8 @@ while True:
 
 	if values['_SEARCH_'] != '':
 		search = values['_SEARCH_'].lower()
-		matches = [name for name in recipe_book.get_recipe_names() if search in name]
+		search_terms = search.split(', ')
+		matches = recipe_book.search_recipes(search_terms)
 		misses = [name for name in recipe_book.get_recipe_names() if name not in matches]
 		for key in matches:
 			window[key].Update(visible=True)
