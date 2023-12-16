@@ -64,8 +64,8 @@ def create_recipe_preview(recipe_name: str):
 
 	# Add folder path for full path to thumbnail
 	thumb_path = THUMB_FOLDER + thumb_name
-	description_thumbnail = sg.Image(filename=(thumb_path))
-	description_text = sg.Text(recipe_book.get_recipe_desc(recipe_name), size=(50, 9), justification="left")
+	description_thumbnail = sg.Image(filename=(thumb_path), enable_events=True, key=f'_{recipe_name}_RECIPETHUMB_')
+	description_text = sg.Text(recipe_book.get_recipe_desc(recipe_name), size=(50, 9), justification="left", enable_events=True, key=f'_{recipe_name}_RECIPETEXT_')
 	# Each call creates a new object, avoids duplicate element restriction in PySimpleGUI
 	separator = lambda: sg.HorizontalSeparator(color="#FFFFFF", pad=(0, 10)) 
 	return sg.pin(sg.Column(
