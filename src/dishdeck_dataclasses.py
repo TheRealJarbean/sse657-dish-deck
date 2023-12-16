@@ -1,5 +1,8 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from os import remove
+
+#Creates all the classes for the project
 
 @dataclass
 class Ingredient:
