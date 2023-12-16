@@ -10,7 +10,7 @@ class Ingredient:
 		if self.unit != None:
 			return f'{self.name} | {self.quantity} {self.unit}'
 		
-		if self.qty != None:
+		if self.quantity != None:
 			return f'{self.name} | {self.quantity}'
 		
 		return f'{self.name}'
