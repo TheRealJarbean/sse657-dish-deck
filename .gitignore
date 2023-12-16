@@ -1,6 +1,6 @@
-# Ignore everything in data except for example recipe and the default image
-data/thumb/*
-data/recipes/*
+# Ignore everything in data except for the example recipe, the default image, and the README
+data/*
+!README.md
 !data/thumb/Missing Image.png
 !data/recipes/Example Recipe.md
 
