@@ -321,6 +321,7 @@ while True:
 		font.name = "Consolas"
 		document.add_paragraph(all_ingredients, style="Normal")
 		document.save(GROCERY_FILE)
+		sg.popup_ok(f'Grocery list successfully created at {GROCERY_FILE}.')
 
 	# Add a recipe
 	for i in range(1):
