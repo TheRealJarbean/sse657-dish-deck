@@ -3,7 +3,8 @@
 
 ## Requirements
 - Python 3.10+
-- PySimpleGUI
+- PySimpleGUI (pip install PySimpleGUI)
+- python-docx (pip install PySimpleGUI)
 
 ## Installation Command
 ```bash

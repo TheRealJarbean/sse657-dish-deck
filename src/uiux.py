@@ -5,6 +5,8 @@
 import PySimpleGUI as sg
 import os
 import sys
+from docx import Document
+from docx.enum.style import WD_STYLE_TYPE
 # Local modules
 from dishdeck_dataclasses import *
 from recipebook import RecipeBook
@@ -15,6 +17,7 @@ sg.theme('dark')
 RECIPE_FOLDER = 'data/recipes/'
 PANTRY_FILE = 'data/pantry.json'
 THUMB_FOLDER = 'data/thumb/'
+GROCERY_FILE = 'data/grocerylist.docx'
 
 ## Set the cwd to the folder above src
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -77,8 +80,8 @@ def create_recipe_preview(recipe_name: str):
 
 # Individual elements of the UI
 search_bar = sg.Input(do_not_clear=True, size=(100, 1), pad=((0, 0), (20, 0)), enable_events=True, key="_SEARCH_")
-ingredient_list = sg.Listbox([], size=(500, 20), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], no_scrollbar=True, key="_INGREDIENTS_")
-recipe_list = sg.Listbox([], size=(500, 20), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], enable_events = True, no_scrollbar=True, key="_SELRECIPELIST_")
+ingredient_list = sg.Listbox([], size=(500, 16), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], no_scrollbar=True, key="_INGREDIENTS_")
+recipe_list = sg.Listbox([], size=(500, 16), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], enable_events = True, no_scrollbar=True, key="_SELRECIPELIST_")
 
 # Layout for the recipebook tab
 layout_recipebook = [[
@@ -89,8 +92,6 @@ layout_recipebook = [[
 				scrollable=True,
 				vertical_scroll_only=True,
 				pad=((0, 10), (10, 0)),
-				vertical_alignment="top",
-				element_justification="left",
 				size=(None, 600),
 				expand_x=True,
 				key="_RECIPELIST_"
@@ -102,7 +103,9 @@ layout_recipebook = [[
 		expand_y=True
 	),
 	sg.Column(
-		[[ingredient_list], [recipe_list]],
+		[[ingredient_list], [recipe_list], [sg.Button('Export Groceries', pad=(0, 10), enable_events=True, key="_EXPORTGROCERIES_")]],
+		element_justification='c',
+		vertical_alignment='t',
 		pad=((0, 0), (0, 0)),
 	)
 ]]
@@ -306,6 +309,18 @@ while True:
 	if event == "_SELRECIPELIST_" and values["_SELRECIPELIST_"] != []:
 		sel_recipename = values["_SELRECIPELIST_"][0]
 		window['_SEARCH_'].Update(value=sel_recipename)
+
+	if event == "_EXPORTGROCERIES_":
+		document = Document()
+		document.add_heading('Grocery List', 0)
+		all_ingredients = ''
+		for ing in list_ingredients:
+			all_ingredients += ing + '\n'
+		style = document.styles['Normal']
+		font = style.font
+		font.name = "Consolas"
+		document.add_paragraph(all_ingredients, style="Normal")
+		document.save(GROCERY_FILE)
 
 	# Add a recipe
 	for i in range(1):
