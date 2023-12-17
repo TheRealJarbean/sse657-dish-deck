@@ -77,7 +77,8 @@ def create_recipe_preview(recipe_name: str):
 
 # Individual elements of the UI
 search_bar = sg.Input(do_not_clear=True, size=(100, 1), pad=((0, 0), (20, 0)), enable_events=True, key="_SEARCH_")
-ingredient_list = sg.Listbox([], size=(500, 500), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], no_scrollbar=True, key="_INGREDIENTS_")
+ingredient_list = sg.Listbox([], size=(500, 20), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], no_scrollbar=True, key="_INGREDIENTS_")
+recipe_list = sg.Listbox([], size=(500, 20), pad=((0, 0), (20, 0)), select_mode="multiple", font=["consolas", 10], enable_events = True, no_scrollbar=True, key="_SELRECIPELIST_")
 
 # Layout for the recipebook tab
 layout_recipebook = [[
@@ -101,7 +102,7 @@ layout_recipebook = [[
 		expand_y=True
 	),
 	sg.Column(
-		[[ingredient_list]],
+		[[ingredient_list], [recipe_list]],
 		pad=((0, 0), (0, 0)),
 	)
 ]]
@@ -242,6 +243,7 @@ while True:
 
 	# Update ingredients list based on selected recipes
 	list_ingredients = []
+	list_recipes = []
 	for name in recipe_book.get_recipe_names():
 		if values[name + "check"]:
 			# TODO: Somehow indicate if pantry has partial amount of ingredient
@@ -254,7 +256,10 @@ while True:
 						list_ingredients += [f'[ ] {ing}']
 				else:
 					list_ingredients += [f'[ ] {ing}']
-	
+			
+			#Adding recipe name to the 'selected list'
+			list_recipes.append(name.title())
+			
 	if list_ingredients != []:
 		max_len = 36 # Max length allowed in listbox boundary
 		ing = lambda s: s[:s.find('|')] # Returns ingredient name part of string
@@ -297,6 +302,11 @@ while True:
 		recipe = recipe_book.get_recipe(r)
 		sg.popup(str(recipe))
 
+	#View recipe card of selected recipe from recipe list
+	if event == "_SELRECIPELIST_" and values["_SELRECIPELIST_"] != []:
+		sel_recipename = values["_SELRECIPELIST_"][0]
+		window['_SEARCH_'].Update(value=sel_recipename)
+
 	# Add a recipe
 	for i in range(1):
 		if event == '_ADDRECIPE_BUTTON_':
@@ -324,8 +334,9 @@ while True:
 				os.execv(python, [python, __file__])	
 
 	window["_INGREDIENTS_"].Update(list_ingredients)
+	window["_SELRECIPELIST_"].Update(list_recipes)
 	window["_PANTRY_"].Update([[ing.name, ing.quantity if ing.quantity != None else 'N/A', ing.unit if ing.unit != None else 'N/A'] for ing in pantry.get_all_ingredients()])
-
+	
 	# End program if user closes window
 	if event == sg.WIN_CLOSED:
 		break
