@@ -30,7 +30,6 @@ recipe_book = RecipeBook()
 # Load all recipes saved in local recipes folder
 file_names = os.listdir(RECIPE_FOLDER)
 for file_name in file_names:#
-	# TODO: Make sure there are no duplicate recipes
 	recipe_book.import_recipe(RECIPE_FOLDER + file_name)
 
 # Create master Pantry object
@@ -46,7 +45,6 @@ data_pantry = [[ing.name, ing.quantity if ing.quantity != None else 'N/A', ing.u
 # Each recipe preview consists of a thumbnail, and as much of the
 # description as will fit in the remaining space in the element
 def create_recipe_preview(recipe_name: str):
-	# TODO: maybe check to make sure the recipe exists in the book
 	checkbox_row = sg.Checkbox(
 		recipe_name.title(), 
 		font=["consolas", 15, "bold"], 
@@ -249,7 +247,6 @@ while True:
 	list_recipes = []
 	for name in recipe_book.get_recipe_names():
 		if values[name + "check"]:
-			# TODO: Somehow indicate if pantry has partial amount of ingredient
 			for ing in recipe_book.get_recipe_ingredients(name):
 				pantry_ing = pantry.get_ingredient(ing.name)
 				if pantry_ing != None:
@@ -286,8 +283,6 @@ while True:
 					pantry.add_ingredient(ingredient, qty, unit)
 				except KeyError as error:
 					sg.popup_ok(f'Error: {str(error)}')
-
-			# TODO: Display message in UI indicating a submission is invalid
 
 	# Delete an ingredient from the pantry
 	if event[0] and event[0] == '_PANTRY_':
