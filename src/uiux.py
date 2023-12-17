@@ -290,6 +290,13 @@ while True:
 	if event == '_PANTRY_SAVE_':
 		pantry.save_ingredients(PANTRY_FILE)
 
+	#View Recipe
+	if "_RECIPETHUMB_" in event or "_RECIPETEXT_" in event:
+		split = event.split('_')
+		r = split[1] if len(split) > 1 else None		
+		recipe = recipe_book.get_recipe(r)
+		sg.popup(str(recipe))
+
 	# Add a recipe
 	for i in range(1):
 		if event == '_ADDRECIPE_BUTTON_':
@@ -314,7 +321,7 @@ while True:
 			recipe_book.add_recipe(RECIPE_FOLDER, name, tags, source, description, ingredients, instructions)
 			if sg.popup_ok('Recipe successfully added! Click OK to reload Recipe Book. (or restart the program)') == 'OK':
 				python = sys.executable
-				os.execv(python, [python, __file__])
+				os.execv(python, [python, __file__])	
 
 	window["_INGREDIENTS_"].Update(list_ingredients)
 	window["_PANTRY_"].Update([[ing.name, ing.quantity if ing.quantity != None else 'N/A', ing.unit if ing.unit != None else 'N/A'] for ing in pantry.get_all_ingredients()])

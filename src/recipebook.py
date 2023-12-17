@@ -64,6 +64,13 @@ class RecipeBook:
 		new_recipe.save(directory)
 		self.__recipes[name] = new_recipe
 
+	#Get recipe object
+	def get_recipe(self, recipe_name):
+		if recipe_name in self.__recipes:
+			return self.__recipes[recipe_name]
+		else:
+			return None
+
 	# TODO: Add filtering, i.e. make parameters ingredients and strict functional
 	#		strict=True means ONLY the listed ingredients can be in returned recipes, no others
 	def get_recipe_names(self, ingredients=None, strict=False):
