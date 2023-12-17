@@ -1,4 +1,5 @@
 # Example Recipe
+#tag1, #tag2
 [Source Is Optional](https://www.google.com)
 
 ## Description
