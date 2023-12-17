@@ -333,7 +333,13 @@ while True:
 			if not tags == None and any(tag.startswith('#') == False for tag in tags):
 				sg.popup_ok('Error: One or more tags in incorrect format.')
 				break
+			if '\n' in instructions:
+				sg.popup_ok('Error: Newline in instructions.')
+				break
 			ingredients = ingredients.split('\n')
+			if '' in ingredients:
+				sg.popup_ok('Error: Blank line in ingredients.')
+				break
 			ingredients = [ing.split(' | ') for ing in ingredients]
 			for ing in ingredients:
 				ing.extend([None] * (3 - len(ing)))
