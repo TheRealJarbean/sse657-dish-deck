@@ -12,14 +12,20 @@ class Pantry:
 		self._ingredients: dict[Ingredient] = {}
 
 	def load_ingredients(self, filepath: str):
-		with open(filepath, 'r') as file:
-			ingredients_as_lists: dict = json.loads(file.read())
-		self._ingredients = {key: Ingredient(ing[0], ing[1], ing[2]) for key, ing in ingredients_as_lists.items()}
+		try:
+			with open(filepath, 'r') as file:
+				ingredients_as_lists: dict = json.loads(file.read())
+			self._ingredients = {key: Ingredient(ing[0], ing[1], ing[2]) for key, ing in ingredients_as_lists.items()}
+		except FileNotFoundError:
+			print('Invalid file path, could not load ingredients')
 
 	def save_ingredients(self, filepath: str):
 		ingredients_as_lists = {key: [ing.name, ing.quantity, ing.unit] for key, ing in self._ingredients.items()}
-		with open(filepath, 'w') as file:
-			file.write(json.dumps(ingredients_as_lists))
+		try:
+			with open(filepath, 'w') as file:
+				file.write(json.dumps(ingredients_as_lists))
+		except FileNotFoundError:
+			print('Invalid file path, aborting save.')
 
 	def add_ingredient(self, name: str, qty: float = None, unit: str = None):
 		name_normalized = name.lower().replace(' ', '')
