@@ -6,7 +6,7 @@ class RecipeBook:
 		# This is a dictionary of Recipes.
 		# Each recipe name points to a Recipe object containing:
 		# name, source, description, ingredients, and instructions
-		self.__recipes: dict[Recipe] = {}
+		self._recipes: dict[Recipe] = {}
 
 	def import_recipe(self, filepath: str):
 		recipe_data = {
@@ -57,37 +57,37 @@ class RecipeBook:
 					recipe_data["instructions"].append(current_line)
 		
 		new_recipe = Recipe(recipe_data["name"], recipe_data["tags"], None, recipe_data["description"], recipe_data["ingredients"], recipe_data["instructions"])
-		self.__recipes[recipe_data["name"].lower()] = new_recipe
+		self._recipes[recipe_data["name"].lower()] = new_recipe
 
 	def add_recipe(self, directory: str, name: str, tags: list[str], source: str | None, description: str, ingredients: list[Ingredient], instructions: list[str]):
 		new_recipe = Recipe(name, tags, source, description, ingredients, instructions)
 		new_recipe.save(directory)
-		self.__recipes[name] = new_recipe
+		self._recipes[name] = new_recipe
 
 	#Get recipe object
 	def get_recipe(self, recipe_name):
-		if recipe_name in self.__recipes:
-			return self.__recipes[recipe_name]
+		if recipe_name in self._recipes:
+			return self._recipes[recipe_name]
 		else:
 			return None
 
 	def get_recipe_names(self):
-		return list(self.__recipes.keys())
+		return list(self._recipes.keys())
 
 	def get_recipe_desc(self, recipe_name: str):
 		if recipe_name in self.get_recipe_names():
-			return self.__recipes[recipe_name].description
+			return self._recipes[recipe_name].description
 		
 	def get_recipe_ingredients(self, recipe_name: str):
 		if recipe_name in self.get_recipe_names():
-			return self.__recipes[recipe_name].ingredients
+			return self._recipes[recipe_name].ingredients
 		
 	def search_recipes(self, search_terms: list[str]) -> list[Recipe]:
 		# Separate tags so they can be treated differently
 		tags = [term for term in search_terms if term.startswith('#')]
 		search_terms = [term for term in search_terms if term not in tags]
 		results = []
-		for key, recipe in self.__recipes.items():
+		for key, recipe in self._recipes.items():
 			if all(tag in recipe.tags for tag in tags) and all(term.lower() in recipe.name.lower() for term in search_terms):
 				results.append(key)
 		return results
