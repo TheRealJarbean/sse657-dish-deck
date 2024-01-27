@@ -33,6 +33,7 @@ def test_load_ingredients(bad_filepath):
 #Save ingredients
 def test_save_ingredients(bad_filepath):
     pantry = Pantry()
+    
     try:
         pantry.save_ingredients(bad_filepath)
     except FileNotFoundError as error:
@@ -48,7 +49,5 @@ def test_add_ingredient(ex_ingredient):
     assert storedIng.quantity == ex_ingredient['qty']
     assert storedIng.unit == ex_ingredient['unit']
 
-    try:
+    with pytest.raises(KeyError):
         pantry.add_ingredient(ex_ingredient['name'])
-    except KeyError as error:
-        pytest.fail(f'Exception was raised: {error}')
