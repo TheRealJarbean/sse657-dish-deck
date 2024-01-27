@@ -40,6 +40,7 @@ def test_ingredient_instantiation_nounit(ex_ing):
 def test_recipe_instantiation(ex_recipe):
 	recipe = Recipe(
 		ex_recipe['name'],
+		None,
 		'https://www.youtube.com',
 		ex_recipe['description'],
 		ex_recipe['ingredients'],
@@ -58,6 +59,7 @@ def test_recipe_instantiation(ex_recipe):
 def test_recipe_instantiation_nosource(ex_recipe):
 	recipe = Recipe(
 		ex_recipe['name'],
+		None,
 		None,
 		ex_recipe['description'],
 		ex_recipe['ingredients'],
