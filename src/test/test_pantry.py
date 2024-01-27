@@ -16,7 +16,6 @@ def used_name():
 @pytest.fixture
 def ex_ingredient():
     return{
-        
         'name': 'flour',
         'qty': '300',
         'unit': 'grams'
@@ -29,7 +28,7 @@ def test_load_ingredients(bad_filepath):
     try:
         pantry.load_ingredients(bad_filepath)
     except FileNotFoundError as error:
-        pytest.fail(f"Execption raised: {error}")
+        pytest.fail(f"Exception raised: {error}")
 
 #Save ingredients
 def test_save_ingredients(bad_filepath):
@@ -37,7 +36,7 @@ def test_save_ingredients(bad_filepath):
     try:
         pantry.save_ingredients(bad_filepath)
     except FileNotFoundError as error:
-        pytest.fail(f"Execption raised: {error}")
+        pytest.fail(f"Exception raised: {error}")
 
 #Add Ingredients
 def test_add_ingredient(ex_ingredient):
@@ -52,4 +51,4 @@ def test_add_ingredient(ex_ingredient):
     try:
         pantry.add_ingredient(ex_ingredient['name'])
     except KeyError as error:
-        pytest.fail(f'Execption was raised: {error}')
+        pytest.fail(f'Exception was raised: {error}')
