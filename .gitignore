@@ -1,3 +1,6 @@
+# Ignore VSCode folder
+.vscode/*
+
 # Ignore everything in data except for the example recipe, the default image, and the README
 data/*
 !README.md
